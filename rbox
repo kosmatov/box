@@ -1,0 +1,9 @@
+#!/bin/zsh
+
+if [ -n "$(lsof -nP -i4TCP:6666)" ]; then 
+  ~/neovide/target/release/neovide --remote-tcp=localhost:6666
+else
+  ssh -L 6666:localhost:6666 vagrant@10.0.1.13 nvim --headless --listen localhost:6666 &
+  sleep 1
+  $0
+fi
