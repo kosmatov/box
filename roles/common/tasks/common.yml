@@ -13,6 +13,7 @@
       - bind-utils
       - kernel-devel
       - chrony
+      - python36-devel
       - make
 
 - name: Detect ZSH path

@@ -1,12 +1,20 @@
 ---
-- name: Install neovim and dependencies
+- name: Remove neovim & gcc from EPEL
   dnf:
     name: 
       - neovim
       - gcc
-      - python36-devel
-      - python3-psutil
-    state: latest
+    state: absent
+
+- name: Install latest neovim from appimage
+  get_url:
+    url: https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+    dest: /usr/local/bin/nvim
+
+- name: Make nvim executable
+  file:
+    path: /usr/local/bin/nvim
+    mode: '755'
 
 - name: Install neovim-remote
   pip: name=neovim-remote state=latest
