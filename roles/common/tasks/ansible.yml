@@ -1,3 +1,3 @@
 ---
-- name: Install Ansible
+- name: install ansible
   dnf: name=ansible state=present

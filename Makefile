@@ -3,7 +3,6 @@ enter:
 
 box_up: up mount
 	ssh-add
-	vagrant ssh
 
 up:
 	vagrant up
@@ -19,3 +18,9 @@ vagrant-home:
 
 halt: umount
 	vagrant halt
+
+deploy:
+	ansible-playbook -i hosts $(if $(tags),-t $(tags) ,)$(if $(rebuild),-e rebuild=$(rebuild) ,)playbook.yml --skip-tags vagrant --vault-password-file secret_vars/.all.txt
+
+config:
+	ansible-vault edit secret_vars/all.yml --vault-password-file secret_vars/.all.txt

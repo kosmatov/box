@@ -1,6 +1,0 @@
----
-- include: dotfiles.yml
-- include: ansible.yml
-  become: true
-- include: neovim.yml
-  become: true

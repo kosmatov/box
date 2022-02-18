@@ -1,11 +1,11 @@
 ---
-- include: docker.yml
+- include: users.yml
   become: true
+- include: dotfiles.yml
   when: users is defined
-- include: docker.yml
+- include: dotfiles.yml
   vars:
     users:
       - name: vagrant
-  become: true
   tags:
     - vagrant

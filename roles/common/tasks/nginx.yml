@@ -1,6 +1,6 @@
 ---
-- name: Install nginx
+- name: install nginx
   dnf: name=nginx state=latest
 
-- name: Start nginx service
+- name: start nginx service
   service: name=nginx enabled=yes state=started

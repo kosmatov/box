@@ -1,0 +1,21 @@
+---
+- name: get dotfiles
+  git:
+    repo: https://github.com/kosmatov/dotfiles
+    dest: "/home/{{ item.name }}/dotfiles"
+  ignore_errors: true
+  become: true
+  become_user: "{{ item.name }}"
+  with_items: "{{ users }}"
+  loop_control:
+    label: "{{ item.name }}"
+
+- name: install dotfiles
+  command: dotfiles/install creates=.config/nvim/
+  args:
+    chdir: "/home/{{ item.name }}"
+  become: true
+  become_user: "{{ item.name }}"
+  with_items: "{{ users }}"
+  loop_control:
+    label: "{{ item.name }}"

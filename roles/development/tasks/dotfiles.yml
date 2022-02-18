@@ -1,7 +1,0 @@
----
-- name: Get dotfiles
-  git: repo=https://github.com/kosmatov/dotfiles dest=~/dotfiles
-  ignore_errors: true
-
-- name: Install dotfiles
-  shell: ~/dotfiles/install creates=~/.vim

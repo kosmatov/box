@@ -1,32 +1,32 @@
 ---
-- name: Create docker disk partition
+- name: create docker disk partition
   parted:
     device: /dev/sdb
     number: 1
     state: present
   become: true
 
-- name: Create home disk partition
+- name: create home disk partition
   parted:
     device: /dev/sdc
     number: 1
     state: present
   become: true
 
-- name: Create docker fs
+- name: create docker fs
   filesystem:
     fstype: xfs
     dev: /dev/sdb1
   become: true
 
-- name: Create home fs
+- name: create home fs
   filesystem:
     fstype: xfs
     dev: /dev/sdc1
   become: true
   register: home_fs_created
 
-- name: Temporary mount home
+- name: temporary mount home
   mount:
     path: /mnt/home
     fstype: xfs
@@ -36,7 +36,7 @@
   register: temporary_home_mounted
   when: home_fs_created.changed
 
-- name: Create vagrant home
+- name: create vagrant home
   file:
     path: /mnt/home/vagrant/
     group: vagrant
@@ -47,7 +47,7 @@
   register: vagrant_home_created
   when: temporary_home_mounted.changed
 
-- name: Copy vagrant home
+- name: copy vagrant home
   copy:
     src: /home/vagrant/
     remote_src: yes
@@ -56,13 +56,13 @@
     owner: vagrant
   when: vagrant_home_created.changed
 
-- name: Umount temporary home
+- name: umount temporary home
   mount:
     path: /mnt/home
     state: absent
   become: true
 
-- name: Mount docker fs
+- name: mount docker fs
   mount:
     path: /var/lib/docker
     src: /dev/sdb1
@@ -70,7 +70,7 @@
     state: mounted
   become: true
 
-- name: Mount home fs
+- name: mount home fs
   mount:
     path: /home
     src: /dev/sdc1

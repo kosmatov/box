@@ -1,43 +1,46 @@
 ---
-- name: Add docker repo
+- name: add docker repo
   get_url:
     url: https://download.docker.com/linux/centos/docker-ce.repo
     dest: /etc/yum.repos.d/docker-ce.repo
 
-- name: Add docker-ce
+- name: add docker-ce
   block:
-    - name: Add latest
+    - name: add latest
       dnf: name=docker-ce state=latest update_cache=true
   rescue:
-    - name: Add --nobest
+    - name: add --nobest
       shell:
         cmd: dnf -y install --nobest docker-ce
         warn: false
       ignore_errors: true
       changed_when: false
 
-- name: Detect docker-compose latest release tag
+- name: detect docker-compose latest release tag
   shell:
     cmd: curl -ILs https://github.com/docker/compose/releases/latest | grep releases/tag | cut -d/ -f8
     warn: false
   register: docker_compose_release_tag
   changed_when: false
 
-- name: Add docker-compose
+- name: add docker-compose
   shell:
     cmd: curl -L "https://github.com/docker/compose/releases/download/{{ docker_compose_release_tag.stdout }}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
     creates: /usr/local/bin/docker-compose
 
-- name: Make docker-compose executable
+- name: make docker-compose executable
   file:
     path: /usr/local/bin/docker-compose
     mode: '755'
 
-- name: Start docker service
+- name: start docker service
   service: name=docker enabled=yes state=started
 
-- name: Add vagrant to docker group
+- name: add users to docker group
   user:
-    name: vagrant
+    name: "{{ item.name }}"
     groups: docker
     append: yes
+  with_items: "{{ users }}"
+  loop_control:
+    label: "{{ item.name }}"

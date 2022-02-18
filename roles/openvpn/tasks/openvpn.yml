@@ -1,0 +1,17 @@
+---
+- name: install packages
+  dnf:
+    state: latest
+    name:
+      - openvpn
+
+- name: setup config
+  copy:
+    dest: /etc/openvpn/client/config.ovpn
+    content: "{{ openvpn_config }}"
+
+- name: setup down script
+  copy:
+    src: files/down.sh
+    dest: /etc/openvpn/client/down.sh
+    mode: '0755'

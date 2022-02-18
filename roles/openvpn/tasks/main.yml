@@ -1,0 +1,4 @@
+---
+- include: openvpn.yml
+  become: true
+  when: openvpn_config is defined

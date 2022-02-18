@@ -1,5 +1,5 @@
 ---
-- name: Install base packages
+- name: install base packages
   dnf:
     state: latest
     name:
@@ -13,28 +13,20 @@
       - bind-utils
       - kernel-devel
       - chrony
-      - python36-devel
+      - clang
       - make
 
-- name: Detect ZSH path
-  shell: which zsh
-  register: which_zsh
-  changed_when: false
-
-- name: Change user shell
-  user: name=vagrant shell={{ which_zsh.stdout }}
-
-- name: Add vagrant to dialout group
-  user:
-    name: vagrant
-    groups: dialout
-    append: yes
-
-- name: Enable chronyd
+- name: enable chronyd
   service: name=chronyd enabled=yes state=started
+  tags:
+    - vagrant
 
-- name: Add exports
+- name: add exports
   template: src=templates/exports dest=/etc/exports
+  tags:
+    - vagrant
 
-- name: Enable NFS service
+- name: enable NFS service
   service: name=nfs-server enabled=yes state=started
+  tags:
+    - vagrant

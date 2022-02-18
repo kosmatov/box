@@ -1,6 +1,18 @@
 ---
 - hosts: all
+  gather_facts: no
   roles:
     - common
+    - users
     - docker
-    - development
+    - neovim
+- hosts: dev
+  tasks:
+    - name: include secret vars
+      include_vars: 'secret_vars/all.yml'
+  roles:
+    - common
+    - users
+    - docker
+    - openvpn
+    - neovim
