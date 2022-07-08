@@ -1,3 +1,5 @@
+.PHONY: lima
+
 enter:
 	(vagrant status | grep running && vagrant ssh) || make box_up
 
@@ -21,6 +23,12 @@ halt: umount
 
 deploy:
 	ansible-playbook -i hosts $(if $(tags),-t $(tags) ,)$(if $(rebuild),-e rebuild=$(rebuild) ,)playbook.yml --skip-tags vagrant --vault-password-file secret_vars/.all.txt
+
+lima:
+	lima dnf list --installed epel-release || lima sudo dnf install epel-release
+	lima sudo dnf update
+	lima dnf list --installed ansible || lima sudo dnf install ansible
+	lima ansible-playbook --inventory localhost, -c local -t lima playbook.yml --skip-tags vagrant
 
 config:
 	ansible-vault edit secret_vars/all.yml --vault-password-file secret_vars/.all.txt

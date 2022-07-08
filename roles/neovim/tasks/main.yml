@@ -1,3 +1,5 @@
 ---
 - include: neovim.yml
   become: true
+  tags:
+    - always

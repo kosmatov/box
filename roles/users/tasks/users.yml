@@ -21,7 +21,7 @@
   authorized_key:
     user: "{{ item.name }}"
     key: "{{ item.pub_key }}"
-  when: userse is defined and item.pub_key is defined
+  when: users is defined and item.pub_key is defined
   with_items: "{{ users }}"
   loop_control:
     label: "{{ item.name }}"
@@ -40,6 +40,7 @@
     src: files/sudoers
     dest: /etc/sudoers.d/10-rbox
     force: no
+  when: users is defined
 
 - name: add Makefile
   copy:

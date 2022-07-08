@@ -4,7 +4,13 @@
     - vagrant
 - include: common.yml
   become: true
+  tags:
+    - always
 - include: nginx.yml
   become: true
+  tags:
+    - always
 - include: ansible.yml
   become: true
+  tags:
+    - always

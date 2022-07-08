@@ -2,7 +2,7 @@
 - name: get dotfiles
   git:
     repo: https://github.com/kosmatov/dotfiles
-    dest: "/home/{{ item.name }}/dotfiles"
+    dest: "{{ item.home }}/dotfiles"
   ignore_errors: true
   become: true
   become_user: "{{ item.name }}"
@@ -13,7 +13,7 @@
 - name: install dotfiles
   command: dotfiles/install creates=.config/nvim/
   args:
-    chdir: "/home/{{ item.name }}"
+    chdir: "{{ item.home }}"
   become: true
   become_user: "{{ item.name }}"
   with_items: "{{ users }}"

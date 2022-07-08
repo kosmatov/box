@@ -6,6 +6,8 @@
     - users
     - docker
     - neovim
+- hosts: localhost
+  connection: local
 - hosts: dev
   tasks:
     - name: include secret vars
