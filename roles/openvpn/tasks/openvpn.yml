@@ -5,13 +5,41 @@
     name:
       - openvpn
 
-- name: setup config
+- name: setup client config
   copy:
     dest: /etc/openvpn/client/config.ovpn
-    content: "{{ openvpn_config }}"
+    content: "{{ openvpn_client_config }}"
 
 - name: setup down script
   copy:
     src: files/down.sh
     dest: /etc/openvpn/client/down.sh
     mode: '0755'
+
+- name: setup server config
+  copy:
+    src: files/server.conf
+    dest: /etc/openvpn/server/server.conf
+
+- name: add ca.crt
+  copy:
+    dest: /etc/openvpn/server/ca.crt
+    content: "{{ openvpn_server.ca_crt }}"
+
+- name: add server.crt
+  copy:
+    dest: /etc/openvpn/server/server.crt
+    content: "{{ openvpn_server.server_crt }}"
+
+- name: add server.key
+  copy:
+    dest: /etc/openvpn/server/server.key
+    content: "{{ openvpn_server.server_key }}"
+
+- name: add ta.key
+  copy:
+    dest: /etc/openvpn/server/ta.key
+    content: "{{ openvpn_server.ta_key }}"
+
+- name: enable openvpn server service
+  service: name=openvpn-server enabled=yes state=started
