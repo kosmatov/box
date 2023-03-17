@@ -1,32 +1,28 @@
 ---
 - name: install base packages
-  dnf:
+  apt:
     state: latest
     name:
-      - epel-release
       - zsh
       - git
       - curl
       - tcpdump
       - telnet
       - net-tools
-      - bind-utils
-      - kernel-devel
-      - chrony
       - clang
       - make
 
-- name: enable chronyd
-  service: name=chronyd enabled=yes state=started
-  tags:
-    - vagrant
+# - name: enable chronyd
+#   service: name=chronyd enabled=yes state=started
+#   tags:
+#     - vagrant
 
-- name: add exports
-  template: src=templates/exports dest=/etc/exports
-  tags:
-    - vagrant
+# - name: add exports
+#   template: src=templates/exports dest=/etc/exports
+#   tags:
+#     - vagrant
 
-- name: enable NFS service
-  service: name=nfs-server enabled=yes state=started
-  tags:
-    - vagrant
+# - name: enable NFS service
+#   service: name=nfs-server enabled=yes state=started
+#   tags:
+#     - vagrant

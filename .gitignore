@@ -6,3 +6,4 @@ home/
 *.vmdk
 hosts
 secret_vars/*.txt
+roles/openvpn/files/

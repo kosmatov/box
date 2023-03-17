@@ -1,37 +1,10 @@
 ---
-- name: add docker repo
-  get_url:
-    url: https://download.docker.com/linux/centos/docker-ce.repo
-    dest: /etc/yum.repos.d/docker-ce.repo
-
-- name: add docker-ce
-  block:
-    - name: add latest
-      dnf: name=docker-ce state=latest update_cache=true
-  rescue:
-    - name: add --nobest
-      shell:
-        cmd: dnf -y install --nobest docker-ce
-        warn: false
-      ignore_errors: true
-      changed_when: false
-
-- name: detect docker-compose latest release tag
-  shell:
-    cmd: curl -ILs https://github.com/docker/compose/releases/latest | grep releases/tag | cut -d/ -f8
-    warn: false
-  register: docker_compose_release_tag
-  changed_when: false
-
-- name: add docker-compose
-  shell:
-    cmd: curl -L "https://github.com/docker/compose/releases/download/{{ docker_compose_release_tag.stdout }}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-    creates: /usr/local/bin/docker-compose
-
-- name: make docker-compose executable
-  file:
-    path: /usr/local/bin/docker-compose
-    mode: '755'
+- name: install docker
+  apt:
+    state: latest
+    name:
+      - docker
+      - docker-compose
 
 - name: start docker service
   service: name=docker enabled=yes state=started

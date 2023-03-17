@@ -1,10 +1,11 @@
 ---
 - name: install dependencies
-  dnf:
+  apt:
     state: latest
     name:
       - gcc
-      - python36-devel
+      - python3-dev
+      - python3-pip
       - fuse
 
 - name: install latest neovim from appimage

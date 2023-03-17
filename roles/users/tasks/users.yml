@@ -3,12 +3,14 @@
   shell: which zsh
   register: which_zsh
   changed_when: false
+  tags:
+    - always
 
 - name: configure users
   user:
     name: "{{ item.name }}"
     groups: "{{ item.groups|d([]) }}"
-    uid: "{{ item.uid }}"
+    uid: "{{ item.uid|d(1000) }}"
     createhome: yes
     shell: "{{ which_zsh.stdout }}"
     state: present
@@ -64,6 +66,11 @@
   user: name=vagrant shell={{ which_zsh.stdout }}
   tags:
     - vagrant
+
+- name: change key shell
+  user: name=key shell={{ which_zsh.stdout }}
+  tags:
+    - lima
 
 - name: remove default user
   user:
