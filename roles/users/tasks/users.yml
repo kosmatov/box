@@ -54,18 +54,11 @@
     label: "{{ item.name }}"
   when: users is defined
 
-- name: add vagrant to dialout group
+- name: add key to dialout group
   user:
-    name: vagrant
+    name: key
     groups: dialout
     append: yes
-  tags:
-    - vagrant
-
-- name: change user shell
-  user: name=vagrant shell={{ which_zsh.stdout }}
-  tags:
-    - vagrant
 
 - name: change key shell
   user: name=key shell={{ which_zsh.stdout }}

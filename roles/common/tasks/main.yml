@@ -1,7 +1,4 @@
 ---
-# - include: disks.yml
-#   tags:
-#     - vagrant
 - include: common.yml
   become: true
   tags:

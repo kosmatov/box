@@ -3,20 +3,10 @@
   apt:
     state: latest
     name:
+      - neovim
       - gcc
       - python3-dev
       - python3-pip
-      - fuse
-
-- name: install latest neovim from appimage
-  get_url:
-    url: https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
-    dest: /usr/local/bin/nvim
-
-- name: make nvim executable
-  file:
-    path: /usr/local/bin/nvim
-    mode: '755'
 
 - name: install neovim-remote
   pip: name=neovim-remote state=latest

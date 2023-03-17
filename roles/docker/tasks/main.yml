@@ -9,10 +9,3 @@
   become: true
   tags:
     - lima
-- include: docker.yml
-  vars:
-    users:
-      - name: vagrant
-  become: true
-  tags:
-    - vagrant

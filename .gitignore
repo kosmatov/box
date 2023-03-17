@@ -1,9 +1,5 @@
-.vagrant/
 private/
 vendor/
-home/
-*.vdi
-*.vmdk
 hosts
 secret_vars/*.txt
 roles/openvpn/files/
