@@ -1,11 +1,6 @@
 ---
 - include: docker.yml
   become: true
-  when: users is defined
-- include: docker.yml
-  vars:
-    users:
-      - name: key
-  become: true
   tags:
     - lima
+    - vagrant

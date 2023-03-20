@@ -3,3 +3,4 @@ vendor/
 hosts
 secret_vars/*.txt
 roles/openvpn/files/
+.vagrant/

@@ -2,11 +2,16 @@
 - include: users.yml
   become: true
 - include: dotfiles.yml
-  when: users is defined
-- include: dotfiles.yml
   vars:
     users:
       - name: key
         home: /home/key.linux
   tags:
     - lima
+- include: dotfiles.yml
+  vars:
+    users:
+      - name: vagrant
+        home: /home/vagrant
+  tags:
+    - vagrant

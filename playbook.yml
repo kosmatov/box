@@ -4,8 +4,8 @@
   roles:
     - common
     - users
-    - neovim
     - docker
+    - neovim
 - hosts: localhost
   connection: local
 - hosts: dev

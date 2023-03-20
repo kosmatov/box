@@ -54,16 +54,26 @@
     label: "{{ item.name }}"
   when: users is defined
 
-- name: add key to dialout group
+- name: add users to dialout group
   user:
-    name: key
+    name: "{{ item.name }}"
     groups: dialout
     append: yes
-
-- name: change key shell
-  user: name=key shell={{ which_zsh.stdout }}
+  with_items: "{{ users }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: users is defined
   tags:
-    - lima
+    - vagrant
+
+- name: change users shell
+  user: name={{ user.name }} shell={{ which_zsh.stdout }}
+  with_items: "{{ users }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: users is defined
+  tags:
+    - vagrant
 
 - name: remove default user
   user:
