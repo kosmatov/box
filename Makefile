@@ -1,14 +1,23 @@
 .PHONY: lima
 
-install:
-	brew install lima socket_vmnet
-	mkdir -p /opt/socket_vmnet
-	sudo cp -R /opt/homebrew/opt/socket_vmnet/* /opt/socket_vmnet/
+install: /opt/homebrew/bin/lima /private/etc/sudoers.d/lima /opt/socket_vmnet
+	export LIMA_DEFAULT_PATH=/
+	limactl start --name=default
+	make provision clean enter
+
+/opt/homebrew/bin/lima:
+	brew install lima
+
+/opt/socket_vmnet:
+	brew isntall socket_vmnet
+	sudo cp -R /opt/homebrew/opt/socket_vmnet /opt/socket_vmnet
+
+/private/etc/sudoers.d/lima:
 	limactl sudoers > etc_sudoers.d_lima
 	sudo install -o root etc_sudoers.d_lima /private/etc/sudoers.d/lima
-	rm etc_sudoers.d_lima
-	limactl start --name=default
-	make provision enter
+
+clean:
+	[ -e etc_sudoers.d_lima ] && rm etc_sudoers.d_lima
 
 destroy:
 	limactl delete default
