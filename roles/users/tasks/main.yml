@@ -4,8 +4,8 @@
 - include: dotfiles.yml
   vars:
     users:
-      - name: key
-        home: /home/key.linux
+      - name: "{{ lookup('env', 'USER') }}"
+        home: "/home/{{ lookup('env', 'USER') }}.linux"
   tags:
     - lima
 - include: dotfiles.yml

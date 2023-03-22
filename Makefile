@@ -1,9 +1,11 @@
 .PHONY: lima
 
+LIMA_INSTANCE ?= arm
+
 install: /opt/homebrew/bin/lima /private/etc/sudoers.d/lima /opt/socket_vmnet
 	export LIMA_DEFAULT_PATH=/
-	limactl start --name=default
-	make provision clean enter
+	limactl start --name=$(LIMA_INSTANCE) --set='.cpus = 4 | .memory = "4GiB" | .arch = "$(if $(findstring $(LIMA_INSTANCE),arm),arm,x86_64)" | .disk = "50GiB"' template://vmnet
+	$(MAKE) provision clean enter
 
 /opt/homebrew/bin/lima:
 	brew install lima
@@ -20,27 +22,27 @@ clean:
 	[ -e etc_sudoers.d_lima ] && rm etc_sudoers.d_lima
 
 destroy:
-	limactl delete default
+	limactl delete $(LIMA_INSTANCE)
 
 provision:
-	lima apt list --installed ansible | grep ansible > /dev/null 2>&1 || lima sudo apt install ansible
+	lima sudo apt list --installed ansible | grep ansible > /dev/null 2>&1 || lima sudo apt install ansible
 	lima ansible-playbook --inventory localhost, -c local -t lima playbook.yml
 
 enter:
-	@make enter-lima
+	@$(MAKE) enter-lima
 
 enter-lima: up
-	@limactl shell --shell /bin/zsh --workdir /home/$(USER).linux/$(LIMA_DEFAULT_PATH) default nvim
+	@limactl shell --shell /bin/zsh --workdir /home/$(USER).linux/$(LIMA_DEFAULT_PATH) $(LIMA_INSTANCE)
 
 up:
-	@limactl list | grep default | grep Stopped > /dev/null 2>&1 && make start || true
+	@limactl list | grep $(LIMA_INSTANCE) | grep Stopped > /dev/null 2>&1 && $(MAKE) start || true
 
 stop:
-	limactl stop default
+	limactl stop $(LIMA_INSTANCE)
 
 start:
 	ssh-add
-	limactl start default
+	limactl start $(LIMA_INSTANCE)
 
 deploy:
 	ansible-playbook -i hosts $(if $(tags),-t $(tags) ,)$(if $(rebuild),-e rebuild=$(rebuild) ,)playbook.yml --vault-password-file secret_vars/.all.txt

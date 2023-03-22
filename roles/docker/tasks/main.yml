@@ -1,6 +1,9 @@
 ---
 - include: docker.yml
   become: true
+  vars:
+    users:
+      - name: "{{ lookup('env', 'USER') }}"
   tags:
     - lima
     - vagrant

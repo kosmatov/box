@@ -19,3 +19,11 @@
   with_items: "{{ users }}"
   loop_control:
     label: "{{ item.name }}"
+
+- name: change users shell
+  user: name={{ item.name }} shell={{ which_zsh.stdout }}
+  with_items: "{{ users }}"
+  loop_control:
+    label: "{{ item.name }}"
+  when: users is defined
+  become: true

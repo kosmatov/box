@@ -66,15 +66,6 @@
   tags:
     - vagrant
 
-- name: change users shell
-  user: name={{ user.name }} shell={{ which_zsh.stdout }}
-  with_items: "{{ users }}"
-  loop_control:
-    label: "{{ item.name }}"
-  when: users is defined
-  tags:
-    - vagrant
-
 - name: remove default user
   user:
     name: "{{ default_user }}"
