@@ -25,8 +25,8 @@ destroy:
 	limactl delete $(LIMA_INSTANCE)
 
 provision:
-	lima sudo apt list --installed ansible | grep ansible > /dev/null 2>&1 || lima sudo apt install ansible
-	lima ansible-playbook --inventory localhost, -c local -t lima playbook.yml
+	limactl shell $(LIMA_INSTANCE) sudo apt list --installed ansible | grep ansible > /dev/null 2>&1 || lima sudo apt install ansible
+	limactl shell $(LIMA_INSTANCE) ansible-playbook --inventory localhost, -c local -t lima playbook.yml
 
 enter:
 	@$(MAKE) enter-lima
