@@ -1,10 +1,15 @@
 .PHONY: lima
 
-LIMA_INSTANCE ?= arm
+LIMA_INSTANCE ?= vz-mantic
+VM_TYPE ?= vz
+VM_CPUS ?= 4
+VM_MEM ?= 4
+VM_DISK ?= 50
+VM_CONF ?= '.vmType = "$(VM_TYPE)" | .cpus = $(VM_CPUS) | .memory = "$(VM_MEM)GiB" | .arch = "aarch64" | .disk = "$(VM_DISK)GiB" | .ssh.forwardAgent = true'
 
 install: /opt/homebrew/bin/lima /private/etc/sudoers.d/lima /opt/socket_vmnet
 	export LIMA_DEFAULT_PATH=/
-	limactl start --name=$(LIMA_INSTANCE) --set='.cpus = 4 | .memory = "4GiB" | .arch = "$(if $(findstring $(LIMA_INSTANCE),arm),arm,x86_64)" | .disk = "50GiB"' template://vmnet
+	limactl start --name=$(LIMA_INSTANCE) --set=$(VM_CONF) template://vmnet
 	$(MAKE) provision clean enter
 
 /opt/homebrew/bin/lima:
@@ -25,7 +30,7 @@ destroy:
 	limactl delete $(LIMA_INSTANCE)
 
 provision:
-	limactl shell $(LIMA_INSTANCE) sudo apt list --installed ansible | grep ansible > /dev/null 2>&1 || lima sudo apt install ansible
+	limactl shell $(LIMA_INSTANCE) sudo apt list --installed ansible | grep ansible > /dev/null 2>&1 || limactl shell $(LIMA_INSTANCE) sudo apt install ansible
 	limactl shell $(LIMA_INSTANCE) ansible-playbook --inventory localhost, -c local -t lima playbook.yml
 
 enter:

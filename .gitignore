@@ -4,3 +4,4 @@ hosts
 secret_vars/*.txt
 roles/openvpn/files/
 .vagrant/
+etc_sudoers.d_lima

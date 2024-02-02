@@ -3,10 +3,33 @@
   apt:
     state: latest
     name:
-      - neovim
+      - cmake
+      - gettext
       - gcc
       - python3-dev
       - python3-pip
+
+- name: get neovim source
+  git:
+    repo: https://github.com/neovim/neovim
+    dest: /root/neovim
+
+- name: build and install neovim
+  command:
+    chdir: /root/neovim
+    cmd: make CMAKE_BUILD_TYPE=RelWithDebInfo install
+    creates: /usr/local/bin/nvim
+
+- name: ensure pip config dir exists
+  file:
+    path: ~/.config/pip/
+    state: directory
+
+- name: add pip config
+  copy:
+    src: files/pip.conf
+    dest: ~/.config/pip/pip.conf
+    force: no
 
 - name: install neovim-remote
   pip: name=neovim-remote state=latest

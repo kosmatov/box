@@ -24,7 +24,6 @@
   apt:
     state: latest
     name:
-      - docker
       - docker-compose
 
 - name: start docker service

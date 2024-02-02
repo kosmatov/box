@@ -11,7 +11,7 @@
     label: "{{ item.name }}"
 
 - name: install dotfiles
-  command: dotfiles/install creates=.config/nvim/
+  command: make -C dotfiles install creates=.config/nvim/
   args:
     chdir: "{{ item.home }}"
   become: true
