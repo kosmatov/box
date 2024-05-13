@@ -7,10 +7,12 @@ VM_MEM ?= 4
 VM_DISK ?= 50
 VM_CONF ?= '.vmType = "$(VM_TYPE)" | .cpus = $(VM_CPUS) | .memory = "$(VM_MEM)GiB" | .arch = "aarch64" | .disk = "$(VM_DISK)GiB" | .ssh.forwardAgent = true'
 
-install: /opt/homebrew/bin/lima /private/etc/sudoers.d/lima /opt/socket_vmnet
+lima: /opt/homebrew/bin/lima /private/etc/sudoers.d/lima /opt/socket_vmnet
 	export LIMA_DEFAULT_PATH=/
 	limactl start --name=$(LIMA_INSTANCE) --set=$(VM_CONF) template://vmnet
-	$(MAKE) provision clean enter
+	$(MAKE) lima-provision lima-clean lima-enter
+
+local: local-provision
 
 /opt/homebrew/bin/lima:
 	brew install lima
@@ -23,31 +25,40 @@ install: /opt/homebrew/bin/lima /private/etc/sudoers.d/lima /opt/socket_vmnet
 	limactl sudoers > etc_sudoers.d_lima
 	sudo install -o root etc_sudoers.d_lima /private/etc/sudoers.d/lima
 
-clean:
+lima-clean:
 	[ -e etc_sudoers.d_lima ] && rm etc_sudoers.d_lima
 
-destroy:
+lima-destroy:
 	limactl delete $(LIMA_INSTANCE)
 
-provision:
+lima-provision:
 	limactl shell $(LIMA_INSTANCE) sudo apt list --installed ansible | grep ansible > /dev/null 2>&1 || limactl shell $(LIMA_INSTANCE) sudo apt install ansible
 	limactl shell $(LIMA_INSTANCE) ansible-playbook --inventory localhost, -c local -t lima playbook.yml
 
-enter:
-	@$(MAKE) enter-lima
+local-provision:
+	ansible-playbook --inventory localhost, -c local playbook.yml
 
-enter-lima: up
+enter:
+	@[ -f /opt/homebrew/bin/lima ] && $(MAKE) lima-enter || true
+
+lima-enter: lima-up
 	@limactl shell --shell /bin/zsh --workdir /home/$(USER).linux/$(LIMA_DEFAULT_PATH) $(LIMA_INSTANCE)
 
-up:
+lima-up:
 	@limactl list | grep $(LIMA_INSTANCE) | grep Stopped > /dev/null 2>&1 && $(MAKE) start || true
 
-stop:
+lima-stop:
 	limactl stop $(LIMA_INSTANCE)
+
+lima-start:
+	limactl start $(LIMA_INSTANCE)
+
+stop:
+	@[ -f /opt/homebrew/bin/lima ] && $(MAKE) lima-stop || true
 
 start:
 	ssh-add
-	limactl start $(LIMA_INSTANCE)
+	@[ -f /opt/homebrew/bin/lima ] && $(MAKE) lima-start || true
 
 deploy:
 	ansible-playbook -i hosts $(if $(tags),-t $(tags) ,)$(if $(rebuild),-e rebuild=$(rebuild) ,)playbook.yml --vault-password-file secret_vars/.all.txt
