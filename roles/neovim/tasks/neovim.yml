@@ -14,11 +14,22 @@
     repo: https://github.com/neovim/neovim
     dest: /root/neovim
 
+- name: checkout to stable
+  command:
+    chdir: /root/neovim
+    cmd: git checkout stable
+
 - name: build and install neovim
   command:
     chdir: /root/neovim
-    cmd: make CMAKE_BUILD_TYPE=RelWithDebInfo install
+    cmd: |
+      make CMAKE_BUILD_TYPE=RelWithDebInfo install
     creates: /usr/local/bin/nvim
+
+- name: clean
+  file:
+    path: /root/neovim
+    state: absent
 
 - name: ensure pip config dir exists
   file:
