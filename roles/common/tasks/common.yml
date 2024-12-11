@@ -11,3 +11,4 @@
       - net-tools
       - clang
       - make
+  become: true

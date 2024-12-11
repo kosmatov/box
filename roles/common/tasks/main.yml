@@ -1,17 +1,13 @@
 ---
-- include: disks.yml
-  become: true
+- import_tasks: disks.yml
   tags:
     - vagrant
-- include: common.yml
-  become: true
+- import_tasks: common.yml
   tags:
     - always
-- include: nginx.yml
-  become: true
+- import_tasks: nginx.yml
   tags:
     - always
-- include: ansible.yml
-  become: true
+- import_tasks: ansible.yml
   tags:
     - always

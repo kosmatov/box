@@ -1,3 +1,4 @@
 ---
 - name: install ansible
   apt: name=ansible state=present
+  become: true

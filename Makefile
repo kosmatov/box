@@ -1,15 +1,17 @@
 .PHONY: lima
 
-LIMA_INSTANCE ?= vz-mantic
+LIMA_INSTANCE ?= vz-ora
 VM_TYPE ?= vz
-VM_CPUS ?= 4
-VM_MEM ?= 4
-VM_DISK ?= 50
+VM_CPUS ?= 6
+VM_MEM ?= 6
+VM_DISK ?= 80
 VM_CONF ?= '.vmType = "$(VM_TYPE)" | .cpus = $(VM_CPUS) | .memory = "$(VM_MEM)GiB" | .arch = "aarch64" | .disk = "$(VM_DISK)GiB" | .ssh.forwardAgent = true'
 
-lima: /opt/homebrew/bin/lima /private/etc/sudoers.d/lima /opt/socket_vmnet
+lima: /opt/homebrew/bin/lima /opt/socket_vmnet
 	export LIMA_DEFAULT_PATH=/
-	limactl start --name=$(LIMA_INSTANCE) --set=$(VM_CONF) template://vmnet
+	limactl sudoers
+	limactl create --network=lima:shared --name=$(LIMA_INSTANCE) --set=$(VM_CONF) template://default
+	limactl start $(LIMA_INSTANCE)
 	$(MAKE) lima-provision lima-clean lima-enter
 
 local: local-provision

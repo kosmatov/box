@@ -1,14 +1,13 @@
 ---
-- include: users.yml
-  become: true
-- include: dotfiles.yml
+- import_tasks: users.yml
+- import_tasks: dotfiles.yml
   vars:
     users:
       - name: "{{ lookup('env', 'USER') }}"
         home: "/home/{{ lookup('env', 'USER') }}.linux"
   tags:
     - lima
-- include: dotfiles.yml
+- import_tasks: dotfiles.yml
   vars:
     users:
       - name: vagrant

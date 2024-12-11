@@ -1,6 +1,5 @@
 ---
-- include: docker.yml
-  become: true
+- import_tasks: docker.yml
   vars:
     users:
       - name: "{{ lookup('env', 'USER') }}"

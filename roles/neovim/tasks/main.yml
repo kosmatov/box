@@ -1,5 +1,4 @@
 ---
-- include: neovim.yml
-  become: true
+- import_tasks: neovim.yml
   tags:
     - always
