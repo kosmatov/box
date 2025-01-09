@@ -4,10 +4,13 @@
     - vagrant
 - import_tasks: common.yml
   tags:
-    - always
+    - lima
+    - vagrant
 - import_tasks: nginx.yml
   tags:
-    - always
+    - lima
+    - vagrant
 - import_tasks: ansible.yml
   tags:
-    - always
+    - lima
+    - vagrant

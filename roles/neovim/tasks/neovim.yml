@@ -11,9 +11,11 @@
   become: true
 
 - name: get neovim source
-  git:
+  ansible.builtin.git:
     repo: https://github.com/neovim/neovim
     dest: /root/neovim
+    refspec: stable
+    force: true
   become: true
 
 - name: checkout to stable
@@ -48,5 +50,5 @@
   become: true
 
 - name: install aider-chat
-  pip: name=aider-chat state=latest
+  pip: name=aider-chat state=absent
   become: true

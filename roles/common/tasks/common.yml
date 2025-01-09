@@ -11,4 +11,7 @@
       - net-tools
       - clang
       - make
+      - fzf
+      - ripgrep
+      - fd-find
   become: true
