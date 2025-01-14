@@ -18,6 +18,7 @@
     state: latest
     name:
       - docker-compose
+      - docker-buildx
   become: true
 
 - name: start docker service
@@ -33,3 +34,51 @@
   become: true
   loop_control:
     label: "{{ item.name }}"
+
+- name: install emulators
+  command:
+    cmd: docker run --privileged --rm tonistiigi/binfmt --install arm64
+  changed_when: false
+
+- name: create docker builder
+  command:
+    cmd: docker buildx create --use
+  changed_when: false
+
+- name: check docker-credential-helpers installed
+  command: which docker-credential-pass
+  ignore_errors: true
+  changed_when: false
+  register: docker_helpers_path
+
+- name: build docker-credential-helpers
+  command:
+    cmd: docker buildx bake "https://github.com/docker/docker-credential-helpers.git"
+  ignore_errors: true
+  when: docker_helpers_path.rc == 1
+  register: docker_build
+
+- name: copy executables
+  command:
+    cmd: cp bin/build/linux_arm64/docker-credential-pass /usr/local/bin/
+  when: docker_helpers_path.rc == 1 and docker_build.rc == 0
+
+- name: clean build artifacts
+  command: rm -r bin/
+  when: docker_helpers_path.rc == 1 and docker_build.rc == 0
+
+- name: ensure .docker exists
+  file:
+    path: /home/{{ users.0.name }}.linux/.docker
+    state: directory
+  tags:
+    - lima
+
+- name: copy default config
+  copy:
+    src: files/config.json
+    dest: /home/{{ users.0.name }}.linux/.docker/config.json
+    force: no
+  become: true
+  tags:
+    - lima
