@@ -1,0 +1,7 @@
+---
+- name: install awscli
+  apt:
+    state: latest
+    name:
+      - awscli
+  become: true
