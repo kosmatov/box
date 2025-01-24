@@ -1,5 +1,5 @@
 ---
-- name: detect ZSH path
+- name: detect zsh path
   shell: which zsh
   register: which_zsh
   changed_when: false

@@ -5,6 +5,7 @@
     - common
     - users
     - docker
+    - aws
     - neovim
 - hosts: localhost
   connection: local

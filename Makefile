@@ -1,36 +1,51 @@
-LIMA_INSTANCE ?= vz-ora
 VM_TYPE ?= vz
 VM_CPUS ?= 8
 VM_MEM ?= 8
 VM_DISK ?= 100
-VM_CONF ?= '.vmType = "$(VM_TYPE)" | .cpus = $(VM_CPUS) | .memory = "$(VM_MEM)GiB" | .arch = "aarch64" | .disk = "$(VM_DISK)GiB" | .ssh.forwardAgent = true'
+LIMA_INSTANCE ?= ora
+VM_CONF ?= '.cpus = $(VM_CPUS) | .memory = "$(VM_MEM)GiB" | .disk = "$(VM_DISK)GiB" | .ssh.forwardAgent = true | .containerd.system = false | .containerd.user = false'
+ifeq ($(VM_TYPE),vz)
+	VM_ARGS ?= --rosetta --mount-type=virtiofs
+else
+	LIMA_INSTANCE := amd64-$(LIMA_INSTANCE)
+	VM_ARGS ?= --arch=x86_64
+endif
 
-lima: /opt/homebrew/bin/lima /opt/socket_vmnet
-	export LIMA_DEFAULT_PATH=/
-	limactl sudoers
-	limactl create --network=lima:shared --name=$(LIMA_INSTANCE) --set=$(VM_CONF) template://default
+lima: /opt/homebrew/bin/lima /opt/homebrew/bin/qemu
+	LIMA_DEFAULT_PATH=/ limactl create \
+		--name=$(LIMA_INSTANCE) \
+		$(VM_ARGS) \
+		-- mount-writable=yes
+		--set=$(VM_CONF) \
+		template://ubuntu
 	limactl start $(LIMA_INSTANCE)
-	$(MAKE) lima-provision lima-clean lima-enter
+	make lima-provision lima-clean lima-stop lima-enter
 
 local: local-provision
 
-/opt/homebrew/bin/lima:
-	brew install lima
-
-/opt/socket_vmnet:
+/opt/socket_vmnet: /private/etc/sudoers.d/lima
+ifneq ($(VM_TYPE),vz)
 	brew install socket_vmnet
 	sudo mkdir -p /opt/socket_vmnet/
 	sudo cp -R /opt/homebrew/opt/socket_vmnet/* /opt/socket_vmnet/
+endif
 
 /private/etc/sudoers.d/lima:
+ifneq ($(VM_TYPE),vz)
 	limactl sudoers > etc_sudoers.d_lima
 	sudo install -o root etc_sudoers.d_lima /private/etc/sudoers.d/lima
+endif
+
+/opt/homebrew/bin/qemu: /opt/socket_vmnet
+ifneq ($(VM_TYPE),vz)
+	brew install qemu
+endif
 
 lima-clean:
-	[ -e etc_sudoers.d_lima ] && rm etc_sudoers.d_lima
+	[ -e etc_sudoers.d_lima ] && rm etc_sudoers.d_lima || true
 
-lima-destroy:
-	limactl delete $(LIMA_INSTANCE)
+/opt/homebrew/bin/lima:
+	brew install lima
 
 lima-provision:
 	limactl shell $(LIMA_INSTANCE) sudo apt-get update
